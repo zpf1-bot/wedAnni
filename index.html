@@ -147,7 +147,12 @@
         }
 
         .photo-frame:hover {
-            transform: rotate(0deg) scale(1.05);
+            transform: rotate(0deg) scale(1.08);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+        }
+
+        .photo-wrapper:nth-child(2) .photo-frame:hover {
+            transform: rotate(0deg) scale(1.08);
         }
 
         .photo-frame img {
@@ -492,7 +497,7 @@
         // Wedding date
         const weddingDate = new Date('2025-03-09 00:00:00');
 
-        // Click counters - load from localStorage
+        // Click counters - using localStorage (shared on same device)
         let husbandClicks = parseInt(localStorage.getItem('husbandClicks')) || 0;
         let wifeClicks = parseInt(localStorage.getItem('wifeClicks')) || 0;
         let totalClicks = parseInt(localStorage.getItem('totalClicks')) || 0;
@@ -502,34 +507,31 @@
         document.getElementById('wife-count').textContent = wifeClicks;
         document.getElementById('total-count').textContent = totalClicks;
 
-        // No cooldown - can click rapidly!
-        
-        // Heart click handler
+        // Heart click handler - saves to localStorage
         function clickHeart(person) {
             if (person === 'husband') {
                 husbandClicks++;
                 document.getElementById('husband-count').textContent = husbandClicks;
-                localStorage.setItem('husbandClicks', husbandClicks);
             } else {
                 wifeClicks++;
                 document.getElementById('wife-count').textContent = wifeClicks;
-                localStorage.setItem('wifeClicks', wifeClicks);
             }
             totalClicks++;
             document.getElementById('total-count').textContent = totalClicks;
+            
+            // Save to localStorage
+            localStorage.setItem('husbandClicks', husbandClicks);
+            localStorage.setItem('wifeClicks', wifeClicks);
             localStorage.setItem('totalClicks', totalClicks);
             
-            // ALWAYS create click effect - no cooldown!
-            createClickEffect(person, totalClicks);
-            
-            // Screen shake on EVERY click - stronger with more clicks (max at 10000)
+            // Screen shake on EVERY click
             shakeScreen(totalClicks);
             
-            // Ring effect on EVERY click - more rings & faster with more clicks
+            // Ring effect on EVERY click
             createRingEffectOnClick(person, totalClicks);
             
-            // Burst effects at milestones
-            if (totalClicks === 5) createBurstEffect('levelup');
+            // Fireworks on EVERY click - bigger with more clicks!
+            createFirework(totalClicks);
             else if (totalClicks === 20) createBurstEffect('super');
             else if (totalClicks === 50) createBurstEffect('mega');
             else if (totalClicks % 10 === 0 && totalClicks > 0) createBurstEffect('normal');
