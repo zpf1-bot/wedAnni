@@ -808,7 +808,7 @@
         const musicBtn = document.getElementById('musicBtn');
         let isPlaying = false;
 
-        // Auto play on load - try multiple times
+        // Auto play function
         function tryAutoPlay() {
             bgm.volume = 0.5;
             const playPromise = bgm.play();
@@ -823,18 +823,20 @@
             }
         }
 
-        // Try immediately
+        // Try immediately when page loads
         tryAutoPlay();
 
-        // Also try on load
-        window.addEventListener('load', tryAutoPlay);
+        // Also try when DOM is ready
+        document.addEventListener('DOMContentLoaded', tryAutoPlay);
 
-        // Also try on first user interaction
-        document.addEventListener('click', function() {
+        // Try on first user interaction (click or touch)
+        function handleFirstInteraction() {
             if (!isPlaying) {
                 tryAutoPlay();
             }
-        }, { once: true });
+        }
+        document.addEventListener('click', handleFirstInteraction, { once: true });
+        document.addEventListener('touchstart', handleFirstInteraction, { once: true });
 
         function toggleMusic() {
             if (isPlaying) {
