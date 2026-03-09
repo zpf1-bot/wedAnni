@@ -60,8 +60,8 @@
         }
 
         @keyframes ringExpand {
-            0% { width: 10px; height: 10px; opacity: 1; }
-            100% { width: 200px; height: 200px; opacity: 0; }
+            0% { width: 10px; height: 10px; opacity: 1; border-width: 4px; }
+            100% { width: 200px; height: 200px; opacity: 0; border-width: 1px; }
         }
 
         @keyframes burst {
@@ -471,36 +471,107 @@
         // Wedding date
         const weddingDate = new Date('2025-03-09 00:00:00');
 
-        // Click counters
-        let husbandClicks = 0;
-        let wifeClicks = 0;
-        let totalClicks = 0;
+        // Click counters - load from localStorage
+        let husbandClicks = parseInt(localStorage.getItem('husbandClicks')) || 0;
+        let wifeClicks = parseInt(localStorage.getItem('wifeClicks')) || 0;
+        let totalClicks = parseInt(localStorage.getItem('totalClicks')) || 0;
 
+        // Update display on load
+        document.getElementById('husband-count').textContent = husbandClicks;
+        document.getElementById('wife-count').textContent = wifeClicks;
+        document.getElementById('total-count').textContent = totalClicks;
+
+        // No cooldown - can click rapidly!
+        
         // Heart click handler
         function clickHeart(person) {
             if (person === 'husband') {
                 husbandClicks++;
                 document.getElementById('husband-count').textContent = husbandClicks;
+                localStorage.setItem('husbandClicks', husbandClicks);
             } else {
                 wifeClicks++;
                 document.getElementById('wife-count').textContent = wifeClicks;
+                localStorage.setItem('wifeClicks', wifeClicks);
             }
             totalClicks++;
             document.getElementById('total-count').textContent = totalClicks;
+            localStorage.setItem('totalClicks', totalClicks);
             
-            // Create click effect based on total clicks - more clicks = cooler!
+            // ALWAYS create click effect - no cooldown!
             createClickEffect(person, totalClicks);
             
-            // Screen shake at milestones
-            if (totalClicks >= 10 && totalClicks % 10 === 0) {
-                shakeScreen();
-            }
+            // Screen shake on EVERY click - stronger with more clicks (max at 10000)
+            shakeScreen(totalClicks);
             
-            // Level up burst effects
+            // Ring effect on EVERY click - more rings & faster with more clicks
+            createRingEffectOnClick(person, totalClicks);
+            
+            // Burst effects at milestones
             if (totalClicks === 5) createBurstEffect('levelup');
             else if (totalClicks === 20) createBurstEffect('super');
             else if (totalClicks === 50) createBurstEffect('mega');
-            else if (totalClicks % 10 === 0) createBurstEffect('normal');
+            else if (totalClicks % 10 === 0 && totalClicks > 0) createBurstEffect('normal');
+        }
+
+        // Screen shake - EVERY click, stronger with more clicks (max at 10000)
+        function shakeScreen(clicks) {
+            const intensity = Math.min(clicks / 10000, 1); // 0-1 scale, max at 10000
+            const shakeAmount = 2 + intensity * 18; // 2-20px
+            
+            const body = document.body;
+            body.style.transition = 'none';
+            
+            // Multiple shakes for stronger effect
+            let shakeCount = Math.floor(1 + intensity * 5); // 1-6 shakes
+            let totalDuration = 50 + intensity * 200;
+            
+            let startTime = Date.now();
+            function shake() {
+                let elapsed = Date.now() - startTime;
+                if (elapsed < totalDuration) {
+                    let x = (Math.random() - 0.5) * shakeAmount;
+                    let y = (Math.random() - 0.5) * shakeAmount;
+                    body.style.transform = `translate(${x}px, ${y}px)`;
+                    requestAnimationFrame(shake);
+                } else {
+                    body.style.transform = '';
+                }
+            }
+            shake();
+        }
+
+        // Ring effect on EVERY click - more rings & faster with more clicks
+        function createRingEffectOnClick(person, clicks) {
+            const btn = document.querySelector(`button[onclick="clickHeart('${person}')"]`);
+            const rect = btn.getBoundingClientRect();
+            
+            // More rings with more clicks (1-8 rings), faster with more clicks
+            const ringCount = Math.min(1 + Math.floor(clicks / 500), 8);
+            const delay = Math.max(50 - Math.floor(clicks / 200) * 10, 10); // 50ms down to 10ms
+            
+            for (let i = 0; i < ringCount; i++) {
+                setTimeout(() => {
+                    const ring = document.createElement('div');
+                    ring.style.position = 'fixed';
+                    ring.style.left = (rect.left + rect.width/2) + 'px';
+                    ring.style.top = (rect.top + rect.height/2) + 'px';
+                    ring.style.width = '10px';
+                    ring.style.height = '10px';
+                    ring.style.borderRadius = '50%';
+                    ring.style.border = `3px solid rgba(255, 107, 107, 0.9)`;
+                    ring.style.transform = 'translate(-50%, -50%)';
+                    ring.style.zIndex = '999';
+                    ring.style.pointerEvents = 'none';
+                    
+                    // Faster expansion with more clicks
+                    const duration = Math.max(0.6 - (clicks / 20000), 0.2);
+                    ring.style.animation = `ringExpand ${duration}s ease-out forwards`;
+                    
+                    document.body.appendChild(ring);
+                    setTimeout(() => ring.remove(), duration * 1000);
+                }, i * delay);
+            }
         }
 
         // Dynamic click effect - MORE CLICKS = COOLER!
@@ -577,15 +648,6 @@
             ring.style.animation = `ringExpand ${0.5 + intensity * 0.1}s ease-out forwards`;
             document.body.appendChild(ring);
             setTimeout(() => ring.remove(), (0.5 + intensity * 0.1) * 1000);
-        }
-
-        // Screen shake effect
-        function shakeScreen() {
-            const body = document.body;
-            body.style.animation = 'none';
-            body.offsetHeight;
-            body.style.animation = 'screenShake 0.5s ease-out';
-            setTimeout(() => body.style.animation = '', 500);
         }
 
         // Burst effects for milestones
