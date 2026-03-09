@@ -629,31 +629,6 @@
             }
         }
 
-        // Click handler - fireworks EVERY click!
-        function clickHeart(person) {
-            if (person === 'husband') {
-                husbandClicks++;
-                document.getElementById('husband-count').textContent = husbandClicks;
-                localStorage.setItem('husbandClicks', husbandClicks);
-            } else {
-                wifeClicks++;
-                document.getElementById('wife-count').textContent = wifeClicks;
-                localStorage.setItem('wifeClicks', wifeClicks);
-            }
-            totalClicks++;
-            document.getElementById('total-count').textContent = totalClicks;
-            localStorage.setItem('totalClicks', totalClicks);
-            
-            // Screen shake on EVERY click
-            shakeScreen(totalClicks);
-            
-            // Ring effect on EVERY click
-            createRingEffectOnClick(person, totalClicks);
-            
-            // Fireworks on EVERY click - bigger with more clicks!
-            createFirework(totalClicks);
-        }
-
         // Firework effect - EVERY click!
         function createRingEffect(rect, intensity) {
             const ring = document.createElement('div');
