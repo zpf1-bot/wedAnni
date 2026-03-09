@@ -448,6 +448,7 @@
         <div class="total-section">
             <div class="total-label">💕 爱的总点击</div>
             <div class="total-count">❤️ <span id="total-count">0</span></div>
+            <button onclick="generateSyncCode()" style="margin-top:10px;padding:8px 16px;background:#ff6b6b;border:none;border-radius:20px;color:white;cursor:pointer;font-size:0.85rem;">🔗 同步给他/她</button>
         </div>
 
         <!-- Timer section -->
@@ -497,7 +498,7 @@
         // Wedding date
         const weddingDate = new Date('2025-03-09 00:00:00');
 
-        // Click counters - using localStorage (shared on same device)
+        // Click counters - local + sync code sharing
         let husbandClicks = parseInt(localStorage.getItem('husbandClicks')) || 0;
         let wifeClicks = parseInt(localStorage.getItem('wifeClicks')) || 0;
         let totalClicks = parseInt(localStorage.getItem('totalClicks')) || 0;
@@ -506,6 +507,37 @@
         document.getElementById('husband-count').textContent = husbandClicks;
         document.getElementById('wife-count').textContent = wifeClicks;
         document.getElementById('total-count').textContent = totalClicks;
+
+        // Check for sync code in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const syncCode = urlParams.get('sync');
+        if (syncCode) {
+            try {
+                const decoded = atob(syncCode);
+                const data = JSON.parse(decoded);
+                husbandClicks += data.h || 0;
+                wifeClicks += data.w || 0;
+                totalClicks += data.t || 0;
+                document.getElementById('husband-count').textContent = husbandClicks;
+                document.getElementById('wife-count').textContent = wifeClicks;
+                document.getElementById('total-count').textContent = totalClicks;
+                localStorage.setItem('husbandClicks', husbandClicks);
+                localStorage.setItem('wifeClicks', wifeClicks);
+                localStorage.setItem('totalClicks', totalClicks);
+                alert('💕 同步成功！已合并点击次数');
+            } catch(e) {}
+        }
+
+        // Generate sync code
+        function generateSyncCode() {
+            const code = btoa(JSON.stringify({h: husbandClicks, w: wifeClicks, t: totalClicks}));
+            const syncUrl = window.location.origin + window.location.pathname + '?sync=' + code;
+            navigator.clipboard.writeText(syncUrl).then(() => {
+                alert('💕 同步链接已复制！发给对方点一下就能累加~');
+            }).catch(() => {
+                prompt('复制发给对方:', syncUrl);
+            });
+        }
 
         // Heart click handler - saves to localStorage
         function clickHeart(person) {
