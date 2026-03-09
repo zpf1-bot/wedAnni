@@ -406,14 +406,47 @@
 
     <!-- Music Player -->
     <div class="music-player" id="musicPlayer" onclick="toggleMusic()">
-        <span class="music-icon">🎵</span>
-        <span class="music-name">Lucky - Jake Miller</span>
-        <button class="music-control" id="musicBtn">▶</button>
+    <span class="music-icon">🎵</span>
+    <span class="music-name">Lucky Me - Jake Miller</span>
+    <button class="music-control" id="musicBtn">▶</button>
     </div>
 
-    <audio id="bgm" loop autoplay>
+    <!-- 修复后的音频标签：增加muted、调整属性顺序，配合JS兜底 -->
+    <audio id="bgm" loop muted>
         <source src="music/lucky.mp3" type="audio/mpeg">
     </audio>
+
+    <script>
+    // 1. 核心：页面加载后尝试自动播放（静音播放，用户点击后可取消静音）
+    window.onload = function() {
+        const bgm = document.getElementById('bgm');
+        const musicBtn = document.getElementById('musicBtn');
+        
+        // 尝试自动播放（处理浏览器兼容）
+        bgm.play().catch(err => {
+            console.log('自动播放被限制，需用户点击后播放');
+            // 可选：提示用户点击播放
+            musicBtn.style.color = 'red';
+            musicBtn.innerText = '点击播放';
+        });
+    };
+
+    // 2. 播放/暂停切换函数（包含取消静音）
+    function toggleMusic() {
+        const bgm = document.getElementById('bgm');
+        const musicBtn = document.getElementById('musicBtn');
+        
+        if (bgm.paused) {
+            bgm.play();
+            bgm.muted = false; // 点击后取消静音
+            musicBtn.innerText = '⏸';
+        } else {
+            bgm.paused;
+            bgm.pause();
+            musicBtn.innerText = '▶';
+        }
+    }
+    </script>
 
     <div class="container">
         <h1>💑 鹏飞 & 阿宇 结婚周年快乐 💑</h1>
