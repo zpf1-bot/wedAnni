@@ -32,14 +32,25 @@
 
         .heart {
             position: absolute;
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 20px;
+            font-size: 24px;
             animation: float 6s ease-in-out infinite;
+            pointer-events: none;
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.6; }
-            50% { transform: translateY(-100px) rotate(10deg); opacity: 1; }
+            0%, 100% { transform: translateY(0) rotate(0deg) scale(1); opacity: 0.8; }
+            50% { transform: translateY(-120px) rotate(15deg) scale(1.2); opacity: 1; }
+        }
+
+        @keyframes heartPop {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
         }
 
         .container {
@@ -71,11 +82,11 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Photo frame */
+        /* Photo section */
         .photo-section {
             display: flex;
             justify-content: center;
-            gap: 30px;
+            gap: 60px;
             flex-wrap: wrap;
             margin-bottom: 50px;
             animation: fadeInUp 1s ease 0.5s both;
@@ -86,6 +97,13 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        .photo-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
         .photo-frame {
             width: 200px;
             height: 260px;
@@ -94,9 +112,10 @@
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
             transform: rotate(-3deg);
             transition: transform 0.3s ease;
+            position: relative;
         }
 
-        .photo-frame:nth-child(2) {
+        .photo-wrapper:nth-child(2) .photo-frame {
             transform: rotate(3deg);
         }
 
@@ -111,9 +130,66 @@
         }
 
         .photo-label {
-            margin-top: 10px;
-            font-size: 0.9rem;
-            color: #666;
+            font-size: 1rem;
+            color: #fff;
+            font-weight: bold;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+
+        /* Clickable heart button */
+        .heart-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .heart-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(255, 107, 107, 0.6);
+        }
+
+        .heart-btn:active {
+            transform: scale(0.95);
+        }
+
+        .click-count {
+            font-size: 1.1rem;
+            color: #fff;
+            font-weight: bold;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+
+        /* Total counter */
+        .total-section {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 20px 40px;
+            margin-bottom: 40px;
+            display: inline-block;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            animation: fadeInUp 1s ease 0.6s both;
+        }
+
+        .total-label {
+            font-size: 1rem;
+            color: #ff6b6b;
+            margin-bottom: 5px;
+        }
+
+        .total-count {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ff6b6b;
         }
 
         /* Timer section */
@@ -199,12 +275,89 @@
             to { opacity: 1; }
         }
 
+        /* Click effect */
+        .click-effect {
+            position: absolute;
+            pointer-events: none;
+            animation: heartPop 0.5s ease-out forwards;
+        }
+
+        /* Music player */
+        .music-player {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            background: rgba(255,255,255,0.95);
+            border-radius: 30px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .music-player:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .music-icon {
+            font-size: 24px;
+            animation: musicRotate 3s linear infinite;
+            display: inline-block;
+        }
+
+        .music-player.playing .music-icon {
+            animation-play-state: running;
+        }
+
+        .music-player:not(.playing) .music-icon {
+            animation-play-state: paused;
+        }
+
+        @keyframes musicRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .music-name {
+            font-size: 0.85rem;
+            color: #333;
+            max-width: 120px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .music-control {
+            background: #ff6b6b;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            color cursor: white;
+           : pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .music-control:hover {
+            transform: scale(1.1);
+        }
+
         /* Responsive */
         @media (max-width: 600px) {
             h1 { font-size: 2rem; }
             .photo-frame { width: 150px; height: 200px; }
             .photo-frame img { height: 180px; }
             .time-value { font-size: 2rem; padding: 10px 15px; min-width: 70px; }
+            .photo-section { gap: 30px; }
         }
     </style>
 </head>
@@ -212,20 +365,45 @@
     <!-- Floating hearts -->
     <div class="hearts-bg" id="heartsBg"></div>
 
+    <!-- Music Player -->
+    <div class="music-player" id="musicPlayer" onclick="toggleMusic()">
+        <span class="music-icon">🎵</span>
+        <span class="music-name">Lucky - Jake Miller</span>
+        <button class="music-control" id="musicBtn">▶</button>
+    </div>
+
+    <audio id="bgm" loop autoplay>
+        <source src="music/lucky.mp3" type="audio/mpeg">
+    </audio>
+
     <div class="container">
         <h1>💑 鹏飞 & 阿宇 结婚周年快乐 💑</h1>
         <p class="subtitle">感谢与你相遇相知的每一天</p>
 
-        <!-- Photo section -->
+        <!-- Photo section with hearts -->
         <div class="photo-section">
-            <div class="photo-frame">
-                <img src="images/husband.jpg" alt="老公照片">
+            <div class="photo-wrapper">
+                <div class="photo-frame">
+                    <img src="images/husband.jpg" alt="老公照片">
+                </div>
                 <div class="photo-label">鹏飞</div>
+                <button class="heart-btn" onclick="clickHeart('husband')">❤️</button>
+                <div class="click-count">❤️ <span id="husband-count">0</span> 次</div>
             </div>
-            <div class="photo-frame">
-                <img src="images/wife.jpg" alt="老婆照片">
+            <div class="photo-wrapper">
+                <div class="photo-frame">
+                    <img src="images/wife.jpg" alt="老婆照片">
+                </div>
                 <div class="photo-label">阿宇</div>
+                <button class="heart-btn" onclick="clickHeart('wife')">❤️</button>
+                <div class="click-count">❤️ <span id="wife-count">0</span> 次</div>
             </div>
+        </div>
+
+        <!-- Total clicks -->
+        <div class="total-section">
+            <div class="total-label">💕 爱的总点击</div>
+            <div class="total-count">❤️ <span id="total-count">0</span></div>
         </div>
 
         <!-- Timer section -->
@@ -241,8 +419,8 @@
                     <div class="time-label">小时</div>
                 </div>
                 <div class="time-unit">
-                    <div class="time-value" id="minutes">0</div>
-                    <div class="time-label">分钟</div>
+                    <div class="time-value" id="minutes">0</div class="time-label>
+                    <div">分钟</div>
                 </div>
                 <div class="time-unit">
                     <div class="time-value" id="seconds">0</div>
@@ -273,9 +451,107 @@
     </div>
 
     <script>
-        <!-- Wedding date - 修改为你们的结婚日期 -->
+        // Wedding date
         const weddingDate = new Date('2025-03-09 00:00:00');
 
+        // Click counters
+        let husbandClicks = 0;
+        let wifeClicks = 0;
+        let totalClicks = 0;
+
+        // Heart click handler
+        function clickHeart(person) {
+            if (person === 'husband') {
+                husbandClicks++;
+                document.getElementById('husband-count').textContent = husbandClicks;
+            } else {
+                wifeClicks++;
+                document.getElementById('wife-count').textContent = wifeClicks;
+            }
+            totalClicks++;
+            document.getElementById('total-count').textContent = totalClicks;
+            
+            // Create click effect
+            createClickEffect(person);
+            
+            // Add more floating hearts based on clicks
+            if (totalClicks % 5 === 0) {
+                addExtraHearts(Math.min(totalClicks / 5, 10));
+            }
+            
+            // Special effects at milestones
+            if (totalClicks === 10) {
+                createFireworks();
+            } else if (totalClicks === 50) {
+                createFireworks();
+                createFireworks();
+            } else if (totalClicks % 20 === 0) {
+                createFireworks();
+            }
+        }
+
+        // Create click effect
+        function createClickEffect(person) {
+            const hearts = ['❤️', '💕', '💗', '💖', '💘', '💝', '😍', '🥰'];
+            const btn = document.querySelector(`button[onclick="clickHeart('${person}')"]`);
+            const rect = btn.getBoundingClientRect();
+            
+            for (let i = 0; i < 3; i++) {
+                const heart = document.createElement('div');
+                heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                heart.className = 'click-effect';
+                heart.style.position = 'fixed';
+                heart.style.left = (rect.left + rect.width/2 + (Math.random() - 0.5) * 60) + 'px';
+                heart.style.top = (rect.top + (Math.random() - 0.5) * 40) + 'px';
+                heart.style.fontSize = (20 + Math.random() * 20) + 'px';
+                heart.style.zIndex = '1000';
+                document.body.appendChild(heart);
+                
+                setTimeout(() => heart.remove(), 500);
+            }
+        }
+
+        // Add extra floating hearts
+        function addExtraHearts(count) {
+            const heartsContainer = document.getElementById('heartsBg');
+            const heartSymbols = ['❤️', '💕', '💗', '💖', '💘', '💝'];
+            
+            for (let i = 0; i < count; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.top = (80 + Math.random() * 20) + '%';
+                heart.style.animationDelay = Math.random() * 3 + 's';
+                heart.style.animationDuration = (4 + Math.random() * 3) + 's';
+                heart.style.fontSize = (15 + Math.random() * 20) + 'px';
+                heartsContainer.appendChild(heart);
+            }
+        }
+
+        // Create fireworks effect
+        function createFireworks() {
+            const container = document.querySelector('.container');
+            const heartSymbols = ['❤️', '💕', '💗', '💖', '💘', '💝', '🎆', '✨'];
+            
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                    heart.style.position = 'fixed';
+                    heart.style.left = (30 + Math.random() * 40) + '%';
+                    heart.style.top = (30 + Math.random() * 30) + '%';
+                    heart.style.fontSize = (30 + Math.random() * 30) + 'px';
+                    heart.style.animation = 'heartPop 1s ease-out forwards';
+                    heart.style.zIndex = '100';
+                    document.body.appendChild(heart);
+                    
+                    setTimeout(() => heart.remove(), 1000);
+                }, i * 50);
+            }
+        }
+
+        // Update timer
         function updateTimer() {
             const now = new Date();
             const diff = now - weddingDate;
@@ -291,7 +567,6 @@
             document.getElementById('seconds').textContent = seconds;
         }
 
-        // Update timer every second
         setInterval(updateTimer, 1000);
         updateTimer();
 
@@ -313,6 +588,37 @@
         }
 
         createHearts();
+
+        // Music player - Auto play on load
+        const bgm = document.getElementById('bgm');
+        const musicPlayer = document.getElementById('musicPlayer');
+        const musicBtn = document.getElementById('musicBtn');
+        let isPlaying = false;
+
+        // 尝试自动播放
+        window.addEventListener('load', function() {
+            bgm.volume = 0.5;
+            bgm.play().then(() => {
+                isPlaying = true;
+                musicBtn.textContent = '⏸';
+                musicPlayer.classList.add('playing');
+            }).catch(e => {
+                console.log('自动播放被阻止，点击播放');
+            });
+        });
+
+        function toggleMusic() {
+            if (isPlaying) {
+                bgm.pause();
+                musicBtn.textContent = '▶';
+                musicPlayer.classList.remove('playing');
+            } else {
+                bgm.play();
+                musicBtn.textContent = '⏸';
+                musicPlayer.classList.add('playing');
+            }
+            isPlaying = !isPlaying;
+        }
     </script>
 </body>
 </html>
