@@ -410,43 +410,10 @@
     <span class="music-name">Lucky Me - Jake Miller</span>
     <button class="music-control" id="musicBtn">▶</button>
     </div>
-
-    <!-- 修复后的音频标签：增加muted、调整属性顺序，配合JS兜底 -->
-    <audio id="bgm" loop muted>
+    
+    <audio id="bgm" loop autoplay>
         <source src="music/lucky.mp3" type="audio/mpeg">
     </audio>
-
-    <script>
-    // 1. 核心：页面加载后尝试自动播放（静音播放，用户点击后可取消静音）
-    window.onload = function() {
-        const bgm = document.getElementById('bgm');
-        const musicBtn = document.getElementById('musicBtn');
-        
-        // 尝试自动播放（处理浏览器兼容）
-        bgm.play().catch(err => {
-            console.log('自动播放被限制，需用户点击后播放');
-            // 可选：提示用户点击播放
-            musicBtn.style.color = 'red';
-            musicBtn.innerText = '点击播放';
-        });
-    };
-
-    // 2. 播放/暂停切换函数（包含取消静音）
-    function toggleMusic() {
-        const bgm = document.getElementById('bgm');
-        const musicBtn = document.getElementById('musicBtn');
-        
-        if (bgm.paused) {
-            bgm.play();
-            bgm.muted = false; // 点击后取消静音
-            musicBtn.innerText = '⏸';
-        } else {
-            bgm.paused;
-            bgm.pause();
-            musicBtn.innerText = '▶';
-        }
-    }
-    </script>
 
     <div class="container">
         <h1>💑 鹏飞 & 阿宇 结婚周年快乐 💑</h1>
@@ -842,17 +809,33 @@
         const musicBtn = document.getElementById('musicBtn');
         let isPlaying = false;
 
-        // 尝试自动播放
-        window.addEventListener('load', function() {
+        // Auto play on load - try multiple times
+        function tryAutoPlay() {
             bgm.volume = 0.5;
-            bgm.play().then(() => {
-                isPlaying = true;
-                musicBtn.textContent = '⏸';
-                musicPlayer.classList.add('playing');
-            }).catch(e => {
-                console.log('自动播放被阻止，点击播放');
-            });
-        });
+            const playPromise = bgm.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    isPlaying = true;
+                    musicBtn.textContent = '⏸';
+                    musicPlayer.classList.add('playing');
+                }).catch(e => {
+                    // 浏览器阻止自动播放，等待用户点击
+                });
+            }
+        }
+
+        // Try immediately
+        tryAutoPlay();
+
+        // Also try on load
+        window.addEventListener('load', tryAutoPlay);
+
+        // Also try on first user interaction
+        document.addEventListener('click', function() {
+            if (!isPlaying) {
+                tryAutoPlay();
+            }
+        }, { once: true });
 
         function toggleMusic() {
             if (isPlaying) {
